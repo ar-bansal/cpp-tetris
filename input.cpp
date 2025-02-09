@@ -63,6 +63,7 @@ public:
         for (int i = rows - 1; i >= 0; i--) {
             std::cout << i << "| ";
             for (int j = 0; j < cols; j++) {
+                // std::cout << board[i][j]; // << ' ';
                 std::cout << board[i][j] << ' ';
             }
             
@@ -71,6 +72,7 @@ public:
 
         std::cout << " | ";
         for (int i = 0; i < cols; i++) {
+            // std::cout << i; // << ' ';
             std::cout << i << ' ';
         }
         std::cout << '|' << '\n';
@@ -134,14 +136,22 @@ public:
         // squares in the current shape's last layer.
         bool allAvailable = true;
         for (int p = xmin; p <= xmax; p++) {
-            bool currBlank = (board[ymin][p] == blankSpace);
-            bool nextBlank = (board[ymin-1][p] == blankSpace);
-            allAvailable = (allAvailable & (currBlank | (!currBlank & nextBlank)));
+            if (ymin >= 1) {
+                bool currBlank = (board[ymin][p] == blankSpace);
+                bool nextBlank = ((ymin >= 1) & (board[ymin-1][p] == blankSpace));
+                allAvailable = (allAvailable & (currBlank | (!currBlank & nextBlank)));
+            } else {
+                allAvailable = false;
+            }
+            
+
+            // std::cout << currBlank << ' ' << nextBlank << ' ' << allAvailable << '\n';
         }
 
         if (!allAvailable) {
             return false;
         }
+        std::cout << "down available" << '\n';
 
         for (int i = std::max(ymin, 1); i <= ymax; i++) {
             for (int j = xmin; j <= xmax; j++) {
@@ -163,16 +173,19 @@ public:
         int ymin = currShapeCoords[2];
         int ymax = currShapeCoords[3];
 
-        if (xmax == cols - 1) {
-            return false;
-        }
-
-        std::cout << "xmax " << xmax << '\n';
-
+        // Check if the space on the right is available for all non blankSpace
+        // squares in the current shape's right col
         bool allAvailable = true;
         for (int p = ymin; p <= ymax; p++) {
-            bool rightBlank = (board[p][xmax + 1]);
-            allAvailable = (allAvailable & rightBlank);
+            bool currBlank = (board[p][xmax] == blankSpace);
+            // Check if the current shape is not at the right extreme 
+            // and if there is space available
+            bool rightBlank = ((xmax < cols - 1) & (board[p][xmax+1] == blankSpace));
+            allAvailable = (allAvailable & (currBlank | rightBlank));
+
+            std::cout << std::boolalpha;
+            std::cout << currBlank << ' ' << rightBlank << ' ' << allAvailable << '\n';
+
         }
 
         if (!allAvailable) {
@@ -180,16 +193,23 @@ public:
         } else {
             for (int i = ymin; i <= ymax; i++) {
                 for (int j = xmax; j >= xmin; j--) {
-                    std::swap(board[i][j], board[i][j+1]);
+                    // std::swap(board[i][j], board[i][j+1]);
+                    board[i][j+1] = board[i][j];
                 }
+                board[i][xmin] = blankSpace;
             }
         }
 
         currShapeCoords[0] += 1;
-        currShapeCoords[1] += 1;
+        // currShapeCoords[1] += 1;
+        currShapeCoords[1] = std::min(currShapeCoords[1] + 1, cols - 1);
+        std::cout << "moved right" << '\n';
 
         return true;
     }
+
+
+    // bool moveLeft() {}
 
     void rotateRight() {
         int xmin = currShapeCoords[0];
@@ -231,7 +251,7 @@ void printVector(const std::vector<int>& vec) {
 
 int main() {
     int nrows = 10;
-    int ncols = 10;
+    int ncols = 8;
     char blankSpace = '.';
     Grid g(nrows, ncols, blankSpace);
 
@@ -243,8 +263,17 @@ int main() {
 
     std::cout << '\n';
     bool inserted = g.insertNewShape(shape);
-    
     g.display();
+    g.rotateRight();
+    g.rotateRight(); 
+    // transposeDiagonal()
+    // std::vector<int> currShapeCoords = g.currShapeCoords;
+    // int xmin = currShapeCoords[0];
+    // int xmax = currShapeCoords[1];
+    // int ymin = currShapeCoords[2];
+    // int ymax = currShapeCoords[3];
+    // transposeDiagonal(xmin, xmax, ymin, ymax, g.board);
+    // g.display();
 
     // for (int i = 0; i < 20; i++ ) {
     //     g.rotateRight();
@@ -267,11 +296,13 @@ int main() {
     while (inserted) {
         std::cout << "here" << '\n';
         bool moved = g.moveDown();
+
         if (i % 1 == 0) {
+            std::cout << "moving right" << '\n';
             g.moveRight();
         }
-        // if (i % 7 == 0) {
-        //     g.rotateLeft();
+        // if (i % 3 == 0) {
+        //     g.rotateRight();
         // }
         printVector(g.currShapeCoords);
         g.display();
@@ -280,6 +311,8 @@ int main() {
         if (!moved) {
             ShapeL shape(blankSpace);
             inserted = g.insertNewShape(shape);
+            g.rotateRight();
+            g.rotateRight();
         }
         i += 1;
     }

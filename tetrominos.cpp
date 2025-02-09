@@ -6,6 +6,9 @@ ShapeL::ShapeL(char blank) : blankSpace(blank), miniGrid{
     {blank, 'X', blank},
     {blank, 'X', blank},
     {blank, 'X', 'X'}
+    // {'X', blank},
+    // {'X', blank},
+    // {'X', 'X'}
 }  {
     height = miniGrid.size();
     width = miniGrid[0].size();
