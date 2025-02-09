@@ -141,11 +141,11 @@ void Piece::freeze(Board& board) {
         }
     }
 
-    location.xmin = -1;
-    location.xmax = -1;
-    location.ymin = -1;
-    location.ymax = -1;
-
+    // location.xmin = -1;
+    // location.xmax = -1;
+    // location.ymin = -1;
+    // location.ymax = -1;
+    // board.currPiece = nullptr;
     isFrozen = true;
 }
 
@@ -153,7 +153,7 @@ void Piece::moveDown(Board& board) {
     if (isValidMoveDown(board)) {
         location.ymax += 1;
         location.ymin += 1;
-    } else {
+    } else if (!isFrozen) {
         freeze(board);
     }
 }
@@ -162,10 +162,10 @@ void Piece::moveDown(Board& board) {
 
 IPiece::IPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {blank, 'X', blank, blank}, 
-        {blank, 'X', blank, blank}, 
-        {blank, 'X', blank, blank}, 
-        {blank, 'X', blank, blank}
+        {blank, fill, blank, blank}, 
+        {blank, fill, blank, blank}, 
+        {blank, fill, blank, blank}, 
+        {blank, fill, blank, blank}
     };
 
     shape.height = shape.grid.size();
@@ -175,9 +175,9 @@ IPiece::IPiece(char blank, char fill) : Piece(blank) {
 
 JPiece::JPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {blank, blank, 'X', blank}, 
-        {blank, blank, 'X', blank}, 
-        {blank, 'X', 'X', blank}, 
+        {blank, blank, fill, blank}, 
+        {blank, blank, fill, blank}, 
+        {blank, fill, fill, blank}, 
         {blank, blank, blank, blank}
     };
 
@@ -188,9 +188,9 @@ JPiece::JPiece(char blank, char fill) : Piece(blank) {
 
 LPiece::LPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {blank, 'X', blank, blank}, 
-        {blank, 'X', blank, blank}, 
-        {blank, 'X', 'X', blank}, 
+        {blank, fill, blank, blank}, 
+        {blank, fill, blank, blank}, 
+        {blank, fill, fill, blank}, 
         {blank, blank, blank, blank}
     };
 
@@ -201,8 +201,8 @@ LPiece::LPiece(char blank, char fill) : Piece(blank) {
 
 OPiece::OPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {blank, 'X', 'X', blank}, 
-        {blank, 'X', 'X', blank}, 
+        {blank, fill, fill, blank}, 
+        {blank, fill, fill, blank}, 
         {blank, blank, blank, blank}, 
         {blank, blank, blank, blank}
     };
@@ -214,8 +214,8 @@ OPiece::OPiece(char blank, char fill) : Piece(blank) {
 
 SPiece::SPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {'X', 'X', blank, blank}, 
-        {blank, 'X', 'X', blank}, 
+        {blank, fill, fill, blank}, 
+        {fill, fill, blank, blank}, 
         {blank, blank, blank, blank}, 
         {blank, blank, blank, blank}
     };
@@ -227,8 +227,8 @@ SPiece::SPiece(char blank, char fill) : Piece(blank) {
 
 TPiece::TPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {'X', 'X', 'X', blank}, 
-        {blank, 'X', blank, blank}, 
+        {fill, fill, fill, blank}, 
+        {blank, fill, blank, blank}, 
         {blank, blank, blank, blank}, 
         {blank, blank, blank, blank}
     };
@@ -240,8 +240,8 @@ TPiece::TPiece(char blank, char fill) : Piece(blank) {
 
 ZPiece::ZPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {blank, 'X', 'X', blank}, 
-        {'X', 'X', blank, blank}, 
+        {fill, fill, blank, blank}, 
+        {blank, fill, fill, blank}, 
         {blank, blank, blank, blank}, 
         {blank, blank, blank, blank}
     };

@@ -35,7 +35,7 @@ void Board::display() {
             }
 
             char toPrint; 
-            if (insideAndFilled) {
+            if (insideAndFilled and (!currPiece->isFrozen)) {
                 toPrint = currPiece->shape.grid.at(i - currPiece->location.ymin).at(j - currPiece->location.xmin);
             } else {
                 toPrint = grid[i][j];
@@ -44,6 +44,7 @@ void Board::display() {
         }
         std::cout << '|' << '\n';
     }
+    std::cout << '\n';
 }
 
 
@@ -69,4 +70,55 @@ void Board::insertPiece(Piece& piece) {
         
         currPiece = &piece;
     }
+}
+
+
+bool Board::isLineFull(int l) {
+    // for (int i = currPiece->location.ymin; i <= currPiece->location.ymax; i++) {
+    for (int j = 0; j < width; j++) {
+        if (grid[l][j] == blankSpace) {
+            return false;
+        }
+    }
+    // }
+    return true;
+}
+
+
+bool Board::isLineEmpty(int l) {
+    for (int j = 0; j < width; j++) {
+        if (grid[l][j] != blankSpace) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Board::clearLine(int l) {
+    grid[l] = std::vector<char>(width, blankSpace);
+    std::cout << "Cleared line " << l;
+}
+
+
+void Board::dropLines() {
+    for (int i = height - 1; i > 0; i--) {
+        if (isLineEmpty(i)) {
+            auto lineAbove = grid[i-1];
+            grid[i] = lineAbove;
+            grid[i-1] = std::vector<char>(width, blankSpace);
+        }
+    }
+}
+
+
+void Board::clearBoard() {
+    // for (int i = currPiece->location.ymin; i <= currPiece->location.ymax; i++) {
+    for (int i = 0; i < height; i++) {
+        if (isLineFull(i)) {
+            std::cout<< "Line " << i << " is full";
+            clearLine(i);
+        }
+    }
+
+    dropLines();
 }

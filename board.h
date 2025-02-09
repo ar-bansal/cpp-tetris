@@ -25,6 +25,12 @@ public:
     bool hasSpace(const Piece& piece); 
     // bool hasSpace(); 
     void insertPiece(Piece& piece);
+
+    bool isLineFull(int l);
+    bool isLineEmpty(int l);
+    void clearLine(int l);
+    void dropLines();
+    void clearBoard();
 };
 
 
