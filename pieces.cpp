@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include "pieces.h"
 
@@ -30,19 +31,61 @@ void Piece::flip() {
 }
 
 
-void Piece::rotateRight() {
-    transposeDiagonal();
-    flip();
+bool Piece::isRotationValid(Board& board) {
+    for (int i = location.ymin; i <= location.ymax; i++) {
+        for (int j = location.xmin; j <= location.xmax; j++) {
+            // Check if inside the board limits
+            bool x = ((j < board.width) & (j >= 0));
+            bool y = ((i < board.height) & (i >= 0));
+
+            if (!x | !y) {
+                return false;
+            }
+
+            std::cout << "Checking here" << '\n';
+
+            // Check if rotation will overlap with an occupied cell on the board
+            char currCell = shape.grid.at(i - location.ymin).at(j - location.xmin);
+            if ((currCell != blankSpace) & (board.grid.at(i).at(j) != board.blankSpace)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+void Piece::rotateRight(Board& board) {
+    if (!isFrozen) {
+        transposeDiagonal();
+        flip();
+
+        std::cout << "rotated right" << '\n';
+        std::cout << location.xmin << ' ' << location.xmax << ' ' << location.ymin << ' ' << location.ymax << '\n';
+        if (!isRotationValid(board)) {
+            flip();
+            transposeDiagonal();
+        }
+    }
+    board.display();
 };
 
 
-void Piece::rotateLeft() {
-    transposeAntidiagonal();
-    flip();
+void Piece::rotateLeft(Board& board) {
+    if (!isFrozen) {
+        transposeAntidiagonal();
+        flip();
+
+        if (!isRotationValid(board)) {
+            flip();
+            transposeAntidiagonal();
+        }
+    }
+    board.display();
 }
 
 
-bool Piece::isValidMoveRight(const Board& board) {
+bool Piece::isValidMoveRight(Board& board) {
     for (int i = location.ymin; i <= location.ymax; i++) {
         for (int j = location.xmin; j <= location.xmax; j++) {
             // Only check for non-empty cells in the shape
@@ -64,15 +107,16 @@ bool Piece::isValidMoveRight(const Board& board) {
 }
 
 
-void Piece::moveRight(const Board& board) {
+void Piece::moveRight(Board& board) {
     if (isValidMoveRight(board)) {
         location.xmax += 1;
         location.xmin += 1;
+        board.display();
     }
 }
 
 
-bool Piece::isValidMoveLeft(const Board& board) {
+bool Piece::isValidMoveLeft(Board& board) {
     for (int i = location.ymin; i <= location.ymax; i++) {
         for (int j = location.xmax; j >= location.xmin; j--) {
             // Only check for non-empty cells in the shape
@@ -93,15 +137,18 @@ bool Piece::isValidMoveLeft(const Board& board) {
 }
 
 
-void Piece::moveLeft(const Board& board) {
+void Piece::moveLeft(Board& board) {
     if (isValidMoveLeft(board)) {
+        board.displayMutex.lock();
         location.xmax -= 1;
         location.xmin -= 1;
+        board.displayMutex.unlock();
+        board.display();
     }
 }
 
 
-bool Piece::isValidMoveDown(const Board& board) {
+bool Piece::isValidMoveDown(Board& board) {
     for (int i = location.ymax; i >= location.ymin; i--) {
         for (int j = location.xmin; j <= location.xmax; j++) {
             if (shape.grid[i - location.ymin][j - location.xmin] != blankSpace) {
@@ -141,11 +188,11 @@ void Piece::freeze(Board& board) {
         }
     }
 
-    // location.xmin = -1;
-    // location.xmax = -1;
-    // location.ymin = -1;
-    // location.ymax = -1;
-    // board.currPiece = nullptr;
+    location.xmin = -1;
+    location.xmax = -1;
+    location.ymin = -1;
+    location.ymax = -1;
+    board.currPiece = nullptr;
     isFrozen = true;
 }
 
@@ -153,9 +200,14 @@ void Piece::moveDown(Board& board) {
     if (isValidMoveDown(board)) {
         location.ymax += 1;
         location.ymin += 1;
+        // If the piece cannot move any lower, freeze it
+        // if (!isValidMoveDown(board)) {
+        //     freeze(board);
+        // }
     } else if (!isFrozen) {
         freeze(board);
     }
+    board.display();
 }
 
 

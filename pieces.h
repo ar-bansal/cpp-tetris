@@ -37,17 +37,26 @@ public:
     void transposeAntidiagonal();
     void flip();
 
-    void rotateRight();
-    void rotateLeft();
+    void rotateRight(Board& board);
+    void rotateLeft(Board& board);
 
-    bool isValidMoveRight(const Board& board);
-    void moveRight(const Board& board);
+    // bool isValidMoveRight(Board& board);
+    // void moveRight(Board& board);
 
-    bool isValidMoveLeft(const Board& board);
-    void moveLeft(const Board& board);
+    // bool isValidMoveLeft(Board& board);
+    // void moveLeft(Board& board);
 
-    bool isValidMoveDown(const Board& board);
+    // bool isValidMoveDown(Board& board);
+    // void moveDown(Board& board);
+    bool isValidMoveRight(Board& board);
+    void moveRight(Board& board);
+    bool isValidMoveLeft(Board& board);
+    void moveLeft(Board& board);
+    bool isValidMoveDown(Board& board);
     void moveDown(Board& board);
+
+    bool isRotationValid(Board& board);
+
 
     void freeze(Board& board);
 

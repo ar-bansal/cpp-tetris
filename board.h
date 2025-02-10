@@ -5,11 +5,15 @@
 #include "pieces.h"
 #include <vector>
 #include <optional>
+#include <mutex>
 
 class Piece;
 
 class Board {
+private:
+
 public: 
+    std::mutex displayMutex;
     std::vector<std::vector<char>> grid;
     
     int width;
@@ -22,7 +26,8 @@ public:
 
     // void display(const Piece& piece);
     void display();
-    bool hasSpace(const Piece& piece); 
+    void displayLoop();
+    bool hasSpace(); 
     // bool hasSpace(); 
     void insertPiece(Piece& piece);
 
