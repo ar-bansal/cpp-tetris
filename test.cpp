@@ -1,72 +1,19 @@
 #include <iostream>
 #include <thread>
 #include <ncurses.h>
-#include <unistd.h>
-#include <mutex>
+// #include <unistd.h>
 #include "pieces.h"
 #include "board.h"
-
-
-std::mutex inputMutex;
-
-static int currInput = 0;
-static bool inputAllowed = true;
-
-void initInput() {
-    initscr();          // Start ncurses mode
-    cbreak();           // Disable line buffering (no need for Enter)
-    noecho();           // Don't show typed characters
-    nodelay(stdscr, TRUE);  // Make getch() non-blocking
-    keypad(stdscr, TRUE);   // Enable special keys (arrows, function keys)
-}
-
-void closeInput() {
-    endwin();  // Restore normal terminal behavior
-}
-
-void getKeyPress() {
-    while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
-
-        if ((currInput == 0) && inputAllowed) {
-            int ch = getch(); 
-            flushinp();  // Prevent extra key presses from accumulating
-        
-            if (ch != ERR) {
-                switch (ch) {
-                case KEY_UP:     
-                    currInput = 1000;
-                    break;
-                case KEY_DOWN:   
-                    currInput = 1001;
-                    break;
-                case KEY_LEFT:   
-                    currInput = 1002;
-                    break;
-                case KEY_RIGHT:  
-                    currInput = 1003;
-                    break;
-                default:         
-                    currInput = 0;
-                    break;
-                }
-            }
-        }
-    }
-}
+#include "input_handler.h"
 
 
 void moveDownLoop(Board* board) {
-    // while (threadBool.load()) {
     while (!board->currPiece->isFrozen) {
         board->currPiece->moveDown(*board);
         board->clearBoard();
         board->display();
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        // refresh();
     }
-    printw("Thread exiting");
 }
 
 
@@ -76,10 +23,11 @@ int score(0);
 Board board(20, 10, blank);
 
 int main() {
-    initInput();
+    InputHandler input_handler;
+    input_handler.initInput();
 
     // Thread for accepting user input.
-    std::thread inputThread(getKeyPress);
+    std::thread inputThread(&InputHandler::getKeyPress, &input_handler);
     inputThread.detach();
 
     // Initialize the board
@@ -99,8 +47,9 @@ int main() {
         } 
 
         while (!p.isFrozen) {
+            int currInput = input_handler.getCurrInput();
             if ((currInput >= 1000) && (currInput < 1004)) {
-                inputAllowed = false;
+                input_handler.blockInput();
 
                 switch (currInput)
                 {
@@ -120,11 +69,11 @@ int main() {
                     break;
                 }
 
-                currInput = 0;
+                input_handler.resetCurrInput();
             }
-            inputAllowed = true;
+            input_handler.allowInput();
         }
     }
 
-    closeInput();
+    input_handler.closeInput();
 }
