@@ -1,5 +1,3 @@
-#include <iostream>
-#include <vector>
 #include "pieces.h"
 
 
@@ -42,8 +40,6 @@ bool Piece::isRotationValid(Board& board) {
                 return false;
             }
 
-            std::cout << "Checking here" << '\n';
-
             // Check if rotation will overlap with an occupied cell on the board
             char currCell = shape.grid.at(i - location.ymin).at(j - location.xmin);
             if ((currCell != blankSpace) && (board.grid.at(i).at(j) != board.blankSpace)) {
@@ -60,8 +56,6 @@ void Piece::rotateRight(Board& board) {
         transposeDiagonal();
         flip();
 
-        std::cout << "rotated right" << '\n';
-        std::cout << location.xmin << ' ' << location.xmax << ' ' << location.ymin << ' ' << location.ymax << '\n';
         if (!isRotationValid(board)) {
             flip();
             transposeDiagonal();
@@ -290,4 +284,30 @@ ZPiece::ZPiece(char blank, char fill) : Piece(blank) {
 
     shape.height = shape.grid.size();
     shape.width = shape.grid.at(0).size();
+}
+
+
+int PieceGenerator::Xorshift::generate() {
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+    
+    return (state % 7);
+}
+
+
+PieceGenerator::PieceGenerator(char blank, char fill, uint32_t state) : rng(Xorshift(state)) {
+    pieceMap.emplace(0, IPiece(blank, fill));
+    pieceMap.emplace(1, JPiece(blank, fill));
+    pieceMap.emplace(2, LPiece(blank, fill));
+    pieceMap.emplace(3, OPiece(blank, fill));
+    pieceMap.emplace(4, SPiece(blank, fill));
+    pieceMap.emplace(5, TPiece(blank, fill));
+    pieceMap.emplace(6, ZPiece(blank, fill));
+}
+
+
+Piece PieceGenerator::getPiece() {
+    int pieceNum = rng.generate();
+    return pieceMap.at(pieceNum);
 }

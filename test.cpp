@@ -30,8 +30,11 @@ int main() {
     std::thread inputThread(&InputHandler::getKeyPress, &input_handler);
     inputThread.detach();
 
+    // Initialize the random piece generator
+    PieceGenerator piece_gen(blank, fill, 2463534242u);
+
     // Initialize the board
-    JPiece p(blank, fill);
+    Piece p = piece_gen.getPiece();
     board.insertPiece(p);
     std::thread moveDownThread(moveDownLoop, &board);
     moveDownThread.detach();
@@ -41,8 +44,7 @@ int main() {
         if (!board.hasSpace()) {
             break;
         } else if (board.currPiece == nullptr) {
-            // get piece function
-            p = JPiece(blank, fill);
+            p = piece_gen.getPiece();
             board.insertPiece(p);
         } 
 

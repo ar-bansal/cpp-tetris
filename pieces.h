@@ -4,6 +4,8 @@
 #define PIECES_H
 
 #include <vector>
+#include <cstdint>
+#include <unordered_map>
 
 
 class Board;
@@ -89,5 +91,36 @@ class ZPiece : public Piece {
 public: 
     ZPiece(char blank, char fill);
 };
+
+
+// class Xorshift32 {
+// private:
+//     uint32_t state;
+// public: 
+//     Xorshift32(uint32_t state);
+
+//     int generate();
+// }
+
+
+class PieceGenerator {
+private: 
+    struct Xorshift {
+        uint32_t state;
+        int generate();
+
+        Xorshift(uint32_t state) : state(state) {}
+    };
+
+    Xorshift rng;
+    // char blank;
+    // char fill;
+    std::unordered_map<int, Piece> pieceMap;
+public: 
+    PieceGenerator(char blank, char fill, uint32_t state);
+
+    Piece getPiece();
+};
+
 
 #endif
