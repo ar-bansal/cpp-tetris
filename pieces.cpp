@@ -133,10 +133,8 @@ bool Piece::isValidMoveLeft(Board& board) {
 
 void Piece::moveLeft(Board& board) {
     if (isValidMoveLeft(board)) {
-        board.displayMutex.lock();
         location.xmax -= 1;
         location.xmin -= 1;
-        board.displayMutex.unlock();
         board.display();
     }
 }

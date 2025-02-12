@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 #include <ncurses.h>
-// #include <unistd.h>
 #include "pieces.h"
 #include "board.h"
 #include "input_handler.h"

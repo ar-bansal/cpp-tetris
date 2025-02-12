@@ -4,8 +4,7 @@
 
 #include "pieces.h"
 #include <vector>
-#include <optional>
-#include <mutex>
+
 
 class Piece;
 
@@ -13,7 +12,6 @@ class Board {
 private:
 
 public: 
-    std::mutex displayMutex;
     std::vector<std::vector<char>> grid;
     
     int width;

@@ -1,7 +1,6 @@
-#include <iostream>
-#include <vector>
-#include <thread>
-#include <ncurses.h>
+#include <vector> 
+#include <thread> 
+#include <ncurses.h> 
 #include "board.h"
 
 
@@ -131,7 +130,6 @@ bool Board::isLineEmpty(int l) {
 
 void Board::clearLine(int l) {
     grid[l] = std::vector<char>(width, blankSpace);
-    std::cout << "Cleared line " << l;
 }
 
 
@@ -149,7 +147,6 @@ void Board::dropLines() {
 void Board::clearBoard() {
     for (int i = 0; i < height; i++) {
         if (isLineFull(i)) {
-            std::cout<< "Line " << i << " is full";
             clearLine(i);
         }
     }
