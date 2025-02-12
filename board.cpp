@@ -144,12 +144,16 @@ void Board::dropLines() {
 }
 
 
-void Board::clearBoard() {
+int Board::clearBoard() {
+    int linesCleared { 0 };
     for (int i = 0; i < height; i++) {
         if (isLineFull(i)) {
             clearLine(i);
+            linesCleared++;
         }
     }
 
     dropLines();
+
+    return linesCleared;
 }

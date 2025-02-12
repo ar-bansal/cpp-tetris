@@ -33,7 +33,7 @@ public:
     bool isLineEmpty(int l);
     void clearLine(int l);
     void dropLines();
-    void clearBoard();
+    int clearBoard();
 };
 
 

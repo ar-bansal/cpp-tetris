@@ -5,21 +5,32 @@
 #include "board.h"
 #include "input_handler.h"
 
+char blank = '.';
+char fill = 'X';
+int score(0);
+int scoreMultiplier = 200;
+int moveDownDelay = 600;
+int lastThreshold = 0;      // Score at which the delay was last reduced. 
+Board board(10, 10, blank);
+
 
 void moveDownLoop(Board* board) {
     while (!board->currPiece->isFrozen) {
         board->currPiece->moveDown(*board);
-        board->clearBoard();
+        
+        int linesCleared = board->clearBoard();
+        score += linesCleared * scoreMultiplier;
+
+        if (score - lastThreshold >= 2 * scoreMultiplier) {
+            lastThreshold = score; 
+            moveDownDelay /= 1.2;
+        }
+
         board->display();
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        std::this_thread::sleep_for(std::chrono::milliseconds(moveDownDelay));
     }
 }
 
-
-char blank = '.';
-char fill = 'X';
-int score(0);
-Board board(20, 10, blank);
 
 int main() {
     InputHandler input_handler;
@@ -75,6 +86,7 @@ int main() {
             input_handler.allowInput();
         }
     }
-
     input_handler.closeInput();
+
+    std::cout << "Your score: " << score << '\n';
 }

@@ -1,5 +1,7 @@
 #include "pieces.h"
 
+#include <chrono>
+
 
 Piece::Piece(char blank) : blankSpace(blank), isFrozen(false) {}
 
