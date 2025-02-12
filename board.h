@@ -22,11 +22,9 @@ public:
 
     Board(int r, int c, char blank);
 
-    // void display(const Piece& piece);
     void display();
     void displayLoop();
     bool hasSpace(); 
-    // bool hasSpace(); 
     void insertPiece(Piece& piece);
 
     bool isLineFull(int l);
