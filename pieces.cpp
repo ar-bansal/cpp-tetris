@@ -237,9 +237,9 @@ LPiece::LPiece(char blank, char fill) : Piece(blank) {
 
 OPiece::OPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {blank, fill, fill, blank}, 
-        {blank, fill, fill, blank}, 
         {blank, blank, blank, blank}, 
+        {blank, fill, fill, blank}, 
+        {blank, fill, fill, blank}, 
         {blank, blank, blank, blank}
     };
 
@@ -250,9 +250,9 @@ OPiece::OPiece(char blank, char fill) : Piece(blank) {
 
 SPiece::SPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
+        {blank, blank, blank, blank}, 
         {blank, fill, fill, blank}, 
         {fill, fill, blank, blank}, 
-        {blank, blank, blank, blank}, 
         {blank, blank, blank, blank}
     };
 
@@ -263,9 +263,9 @@ SPiece::SPiece(char blank, char fill) : Piece(blank) {
 
 TPiece::TPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
-        {fill, fill, fill, blank}, 
-        {blank, fill, blank, blank}, 
         {blank, blank, blank, blank}, 
+        {blank, fill, blank, blank}, 
+        {fill, fill, fill, blank}, 
         {blank, blank, blank, blank}
     };
 
@@ -276,9 +276,9 @@ TPiece::TPiece(char blank, char fill) : Piece(blank) {
 
 ZPiece::ZPiece(char blank, char fill) : Piece(blank) {
     shape.grid = {
+        {blank, blank, blank, blank}, 
         {fill, fill, blank, blank}, 
         {blank, fill, fill, blank}, 
-        {blank, blank, blank, blank}, 
         {blank, blank, blank, blank}
     };
 
@@ -296,7 +296,18 @@ int PieceGenerator::Xorshift::generate() {
 }
 
 
-PieceGenerator::PieceGenerator(char blank, char fill, uint32_t state) : rng(Xorshift(state)) {
+uint32_t generateSeed() {
+    using namespace std::chrono;
+    
+    uint64_t time_now = duration_cast<milliseconds>(
+        system_clock::now().time_since_epoch()
+    ).count();
+
+    return static_cast<uint32_t>(time_now);
+}
+
+
+PieceGenerator::PieceGenerator(char blank, char fill, uint32_t state) : rng(Xorshift(generateSeed())) {
     pieceMap.emplace(0, IPiece(blank, fill));
     pieceMap.emplace(1, JPiece(blank, fill));
     pieceMap.emplace(2, LPiece(blank, fill));
