@@ -170,28 +170,23 @@ bool Piece::isValidMoveDown(Board& board) {
 void Piece::freeze(Board& board) {
     for (int i = 0; i < board.height; i++) {
         for (int j = 0; j < board.width; j++) {
-            // Check if the cell is inside the bounding box square. 
-            bool x = ((j <= location.xmax) && (j >= location.xmin));
-            bool y = ((i <= location.ymax) && (i >= location.ymin));
+            // Check if (i, j) is inside the piece's bounding box
+            if (i >= location.ymin && i <= location.ymax && 
+                j >= location.xmin && j <= location.xmax) {
 
-            bool inside = (x && y);
-            bool insideAndFilled = false;
+                    int bboxRow = i - location.ymin;
+                    int bboxCol = j - location.xmin;
 
-            if (inside) {
-                bool filled = (shape.grid.at(i - location.ymin).at(j - location.xmin) != blankSpace);
-                insideAndFilled = filled && inside;
-            }
+                    char bboxCell = shape.grid.at(bboxRow).at(bboxCol);
 
-            if (insideAndFilled) {
-                board.grid[i][j] = shape.grid.at(i - location.ymin).at(j - location.xmin);
-            }
+                    // Check if the cell in the bounding box is filled
+                    if (bboxCell != blankSpace) {
+                        board.grid.at(i).at(j) = bboxCell;
+                    }
+                }
         }
     }
 
-    // location.xmin = -1;
-    // location.xmax = -1;
-    // location.ymin = -1;
-    // location.ymax = -1;
     location = {-1, -1, -1, -1};
     board.currPiece = nullptr;
     isFrozen = true;
@@ -204,9 +199,7 @@ void Piece::moveDown(Board& board) {
     } else if (!isFrozen) {
         freeze(board);
     }
-    // board.display();
 }
-
 
 
 IPiece::IPiece(char blank, char fill) : Piece(blank) {
