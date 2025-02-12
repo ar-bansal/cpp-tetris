@@ -35,8 +35,8 @@ bool Piece::isRotationValid(Board& board) {
     for (int i = location.ymin; i <= location.ymax; i++) {
         for (int j = location.xmin; j <= location.xmax; j++) {
             // Check if inside the board limits
-            bool x = ((j < board.width) & (j >= 0));
-            bool y = ((i < board.height) & (i >= 0));
+            bool x = ((j < board.width) && (j >= 0));
+            bool y = ((i < board.height) && (i >= 0));
 
             if (!x | !y) {
                 return false;
@@ -46,7 +46,7 @@ bool Piece::isRotationValid(Board& board) {
 
             // Check if rotation will overlap with an occupied cell on the board
             char currCell = shape.grid.at(i - location.ymin).at(j - location.xmin);
-            if ((currCell != blankSpace) & (board.grid.at(i).at(j) != board.blankSpace)) {
+            if ((currCell != blankSpace) && (board.grid.at(i).at(j) != board.blankSpace)) {
                 return false;
             }
         }
@@ -171,15 +171,15 @@ void Piece::freeze(Board& board) {
     for (int i = 0; i < board.height; i++) {
         for (int j = 0; j < board.width; j++) {
             // Check if the cell is inside the bounding box square. 
-            bool x = ((j <= location.xmax) & (j >= location.xmin));
-            bool y = ((i <= location.ymax) & (i >= location.ymin));
+            bool x = ((j <= location.xmax) && (j >= location.xmin));
+            bool y = ((i <= location.ymax) && (i >= location.ymin));
 
-            bool inside = (x & y);
+            bool inside = (x && y);
             bool insideAndFilled = false;
 
             if (inside) {
                 bool filled = (shape.grid.at(i - location.ymin).at(j - location.xmin) != blankSpace);
-                insideAndFilled = filled & inside;
+                insideAndFilled = filled && inside;
             }
 
             if (insideAndFilled) {
@@ -200,14 +200,10 @@ void Piece::moveDown(Board& board) {
     if (isValidMoveDown(board)) {
         location.ymax += 1;
         location.ymin += 1;
-        // If the piece cannot move any lower, freeze it
-        // if (!isValidMoveDown(board)) {
-        //     freeze(board);
-        // }
     } else if (!isFrozen) {
         freeze(board);
     }
-    board.display();
+    // board.display();
 }
 
 

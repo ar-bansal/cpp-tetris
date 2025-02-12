@@ -5,7 +5,6 @@
 #include <mutex>
 #include "pieces.h"
 #include "board.h"
-// #include "poller.cpp"
 
 
 std::mutex inputMutex;
@@ -27,15 +26,12 @@ void closeInput() {
 
 void getKeyPress() {
     while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 48));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
 
-        if ((currInput == 0) & inputAllowed) {
-            // if (inputMutex.try_lock()) {
-
-            int ch = getch();  // Read input (non-blocking)
-            flushinp();
-            // return (ch != ERR) ? ch : -1;  // Return key if pressed, else -1
-
+        if ((currInput == 0) && inputAllowed) {
+            int ch = getch(); 
+            flushinp();  // Prevent extra key presses from accumulating
+        
             if (ch != ERR) {
                 switch (ch) {
                 case KEY_UP:     
@@ -55,34 +51,56 @@ void getKeyPress() {
                     break;
                 }
             }
-                // inputMutex.unlock();
-                // refresh();
-                // printw("New key press: %i", currInput);
         }
     }
 }
 
+
+void moveDownLoop(Board* board) {
+    // while (threadBool.load()) {
+    while (!board->currPiece->isFrozen) {
+        board->currPiece->moveDown(*board);
+        board->clearBoard();
+        board->display();
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+        // refresh();
+    }
+    printw("Thread exiting");
+}
+
+
 char blank = '.';
 char fill = 'X';
+int score(0);
 Board board(20, 10, blank);
 
+int main() {
+    initInput();
 
-void runGameLoop() {
+    // Thread for accepting user input.
+    std::thread inputThread(getKeyPress);
+    inputThread.detach();
+
+    // Initialize the board
     JPiece p(blank, fill);
-    while (true) {
-        if (board.hasSpace()) {
-            p = JPiece(blank, fill); 
-            p.rotateRight(board);
-            board.insertPiece(p);
-        } else {
-            break;
-        }
+    board.insertPiece(p);
+    std::thread moveDownThread(moveDownLoop, &board);
+    moveDownThread.detach();
 
-        // i++;
+
+    while (true) {
+        if (!board.hasSpace()) {
+            break;
+        } else if (board.currPiece == nullptr) {
+            // get piece function
+            p = JPiece(blank, fill);
+            board.insertPiece(p);
+        } 
+
         while (!p.isFrozen) {
-            if ((currInput >= 1000) & (currInput < 1004)) {
+            if ((currInput >= 1000) && (currInput < 1004)) {
                 inputAllowed = false;
-                // inputMutex.lock();
 
                 switch (currInput)
                 {
@@ -101,71 +119,12 @@ void runGameLoop() {
                 default:
                     break;
                 }
-                // inputMutex.unlock();
 
                 currInput = 0;
             }
             inputAllowed = true;
-            p.moveDown(board);
-            // std::cout << p.location.xmin << ' ' << p.location.xmax << ' ' << p.location.ymin << ' ' << p.location.ymax << '\n';
-
-            board.clearBoard();
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
         }
     }
-}
-
-
-int main() {
-    initInput();
-    std::thread inputThread(getKeyPress);
-    std::thread gameLoopThread(runGameLoop);
-    inputThread.detach();
-    gameLoopThread.join();
 
     closeInput();
-
-
 }
-
-
-
-
-
-
-
-// int main() {
-//     int i = 1;
-    
-//     JPiece p(blank, fill);
-//     while (true) {
-//         if (board.hasSpace()) {
-//             p = JPiece(blank, fill); 
-//             p.rotateRight(board);
-//             board.insertPiece(p);
-//         } else {
-//             break;
-//         }
-
-//         i++;
-//         while (!p.isFrozen) {
-//             if (i % 2 == 0) {
-//                 p.rotateRight(board);
-//                 p.moveRight(board);
-//                 std::cout << p.location.xmin << ' ' << p.location.xmax << ' ' << p.location.ymin << ' ' << p.location.ymax << '\n';
-                
-//             } 
-//             if (i % 3 == 0) {
-//                 p.moveLeft(board);
-//                 p.moveLeft(board);
-//                 std::cout << p.location.xmin << ' ' << p.location.xmax << ' ' << p.location.ymin << ' ' << p.location.ymax << '\n';
-//             }
-//             p.moveDown(board);
-//             std::cout << p.location.xmin << ' ' << p.location.xmax << ' ' << p.location.ymin << ' ' << p.location.ymax << '\n';
-
-//             board.clearBoard();
-//             std::this_thread::sleep_for(std::chrono::milliseconds(350));
-//         }
-//     }
-
-// }

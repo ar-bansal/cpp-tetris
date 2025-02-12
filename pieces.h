@@ -1,6 +1,5 @@
 #include "board.h"
 
-
 #ifndef PIECES_H
 #define PIECES_H
 
@@ -23,8 +22,8 @@ public:
 
     struct Shape {
         std::vector<std::vector<char>> grid;
-        int height; // = grid.size();
-        int width; // = grid.at(0).size();
+        int height;
+        int width;
     };
     Shape shape;
     char blankSpace;
@@ -40,14 +39,6 @@ public:
     void rotateRight(Board& board);
     void rotateLeft(Board& board);
 
-    // bool isValidMoveRight(Board& board);
-    // void moveRight(Board& board);
-
-    // bool isValidMoveLeft(Board& board);
-    // void moveLeft(Board& board);
-
-    // bool isValidMoveDown(Board& board);
-    // void moveDown(Board& board);
     bool isValidMoveRight(Board& board);
     void moveRight(Board& board);
     bool isValidMoveLeft(Board& board);

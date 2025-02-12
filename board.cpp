@@ -16,7 +16,6 @@ void pause(int seconds = 0, int milliseconds = 0, int microseconds = 0) {
 }
 
 
-
 Board::Board(int r, int c, char blank) : 
     blankSpace(blank), 
     height(r), 
@@ -25,101 +24,19 @@ Board::Board(int r, int c, char blank) :
     currPiece(nullptr) {}
 
 
-// void Board::display() {
-//     std::cout << " | ";
-//     for (int i = 0; i < width; i++) {
-//         std::cout << i << ' ';
-//     }
-//     std::cout << '|' << '\n';
-
-//     for (int i = 0; i < height; i++) {
-//         std::cout << i << "| ";
-//         for (int j = 0; j < width; j++) {
-//             // Check if the cell is inside the bounding box square. 
-//             bool x = ((j <= currPiece->location.xmax) & (j >= currPiece->location.xmin));
-//             bool y = ((i <= currPiece->location.ymax) & (i >= currPiece->location.ymin));
-
-//             bool inside = (x & y);
-//             bool insideAndFilled = false;
-
-
-//             if (inside) {
-//                 bool filled = (currPiece->shape.grid.at(i - currPiece->location.ymin).at(j - currPiece->location.xmin) != blankSpace);
-//                 insideAndFilled = filled & inside;
-//             }
-
-//             char toPrint; 
-//             if (insideAndFilled and (!currPiece->isFrozen)) {
-//                 toPrint = currPiece->shape.grid.at(i - currPiece->location.ymin).at(j - currPiece->location.xmin);
-//             } else {
-//                 toPrint = grid[i][j];
-//             }
-//             std::cout << toPrint << ' '; 
-//         }
-//         std::cout << '|' << '\n';
-//     }
-//     std::cout << '\n';
-// }
-
-// void Board::display() {
-//     clear();  // Clear the screen before drawing
-
-//     // Print column indices
-//     move(0, 2);  // Move to the first row, aligned properly
-//     for (int i = 0; i < width; i++) {
-//         printw("%d ", i);
-//     }
-//     printw("|");  // Right border
-
-//     // Print the board grid
-//     for (int i = 0; i < height; i++) {
-//         move(i + 1, 0);  // Move to the start of each row
-//         printw("%d| ", i);  // Print row index
-
-//         for (int j = 0; j < width; j++) {
-//             // Check if the cell is inside the bounding box square
-//             bool x = ((j <= currPiece->location.xmax) & (j >= currPiece->location.xmin));
-//             bool y = ((i <= currPiece->location.ymax) & (i >= currPiece->location.ymin));
-//             bool inside = (x & y);
-//             bool insideAndFilled = false;
-
-//             if (inside) {
-//                 bool filled = (currPiece->shape.grid.at(i - currPiece->location.ymin)
-//                                .at(j - currPiece->location.xmin) != blankSpace);
-//                 insideAndFilled = filled & inside;
-//             }
-
-//             char toPrint;
-//             if (insideAndFilled && (!currPiece->isFrozen)) {
-//                 toPrint = currPiece->shape.grid.at(i - currPiece->location.ymin)
-//                                       .at(j - currPiece->location.xmin);
-//             } else {
-//                 toPrint = grid[i][j];
-//             }
-
-//             printw("%c ", toPrint);  // Print character with spacing
-//         }
-
-//         printw("|");  // Right border
-//     }
-
-//     refresh();  // Refresh the screen to apply changes
-// }
-
 void Board::display() {
     clear();  // Clear the screen before drawing
 
-    // Print column indices
-    move(0, 2);  // Move to the first row, aligned properly
-    // for (int i = 0; i < width; i++) {
-    //     printw("%d ", i);
-    // }
-    // printw("|");  // Right border
+    move(0, 0);
+    
+    for (int i = 0; i < width + 2; i++) {
+        printw("= ");
+    }
+    printw("\n");
 
     // Print the board grid
     for (int i = 0; i < height; i++) {
-        move(i + 1, 0);  // Move to the start of each row
-        // printw("%d| ", i);  // Print row index
+        move(i + 1, 0);  
         printw("| ");
 
         for (int j = 0; j < width; j++) {
@@ -127,15 +44,15 @@ void Board::display() {
             char toPrint;
             if (currPiece != nullptr) {
                 // Check if the cell is inside the bounding box square
-                bool x = ((j <= currPiece->location.xmax) & (j >= currPiece->location.xmin));
-                bool y = ((i <= currPiece->location.ymax) & (i >= currPiece->location.ymin));
-                bool inside = (x & y);
+                bool x = ((j <= currPiece->location.xmax) && (j >= currPiece->location.xmin));
+                bool y = ((i <= currPiece->location.ymax) && (i >= currPiece->location.ymin));
+                bool inside = (x && y);
                 bool insideAndFilled = false;
 
                 if (inside) {
                     bool filled = (currPiece->shape.grid.at(i - currPiece->location.ymin)
                                 .at(j - currPiece->location.xmin) != blankSpace);
-                    insideAndFilled = filled & inside;
+                    insideAndFilled = filled && inside;
                 }
 
                 if (!insideAndFilled | (currPiece->isFrozen)) {
@@ -148,18 +65,6 @@ void Board::display() {
                 toPrint = grid[i][j];
             }
 
-
-
-
-
-
-            // if (insideAndFilled && (!currPiece->isFrozen)) {
-            //     toPrint = currPiece->shape.grid.at(i - currPiece->location.ymin)
-            //                           .at(j - currPiece->location.xmin);
-            // } else {
-            //     toPrint = grid[i][j];
-            // }
-
             printw("%c ", toPrint);  // Print character with spacing
         }
 
@@ -170,6 +75,7 @@ void Board::display() {
     for (int i = 0; i < width + 2; i++) {
         printw("= ");
     }
+    printw("\n");
 
     refresh();  // Refresh the screen to apply changes
 }
@@ -178,8 +84,8 @@ void Board::display() {
 
 
 bool Board::hasSpace() {
-    // Check if the middle 4 columns of the top 4 
-    // rows are empty
+    // Check if the middle 4 columns of 
+    // the top 4 rows are empty
     for (int i = 0; i < 4; i++) {
         for (int j = (width / 2) - 2; j < (width / 2) + 2; j++) {
             if (grid.at(i).at(j) != blankSpace) {
