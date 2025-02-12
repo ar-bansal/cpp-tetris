@@ -188,10 +188,11 @@ void Piece::freeze(Board& board) {
         }
     }
 
-    location.xmin = -1;
-    location.xmax = -1;
-    location.ymin = -1;
-    location.ymax = -1;
+    // location.xmin = -1;
+    // location.xmax = -1;
+    // location.ymin = -1;
+    // location.ymax = -1;
+    location = {-1, -1, -1, -1};
     board.currPiece = nullptr;
     isFrozen = true;
 }
